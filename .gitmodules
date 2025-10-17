@@ -1,3 +1,6 @@
 [submodule "external/GeographicLib"]
 	path = external/GeographicLib
 	url = https://github.com/geographiclib/geographiclib.git
+[submodule "external/googletest"]
+	path = external/googletest
+	url = https://github.com/google/googletest.git

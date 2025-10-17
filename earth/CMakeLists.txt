@@ -10,13 +10,15 @@ add_library(earth STATIC
 )
 
 file(COPY ${CMAKE_SOURCE_DIR}/data/magnetic/wmm2025.wmm
-     DESTINATION ${CMAKE_BINARY_DIR}/earth)
+     DESTINATION ${CMAKE_BINARY_DIR})
 
 file(COPY ${CMAKE_SOURCE_DIR}/data/magnetic/wmm2025.wmm.cof
-     DESTINATION ${CMAKE_BINARY_DIR}/earth)
+     DESTINATION ${CMAKE_BINARY_DIR})
 
 target_include_directories(earth PUBLIC include)
 target_link_libraries(earth PUBLIC GeographicLib)
 
 add_executable(earth_main main.cpp)
 target_link_libraries(earth_main PRIVATE earth)
+
+add_subdirectory(test)

@@ -3,7 +3,7 @@
 
 int main() {
 	try {
-		Coords coords{ 51.6, 13.2, 500 };
+		Coords coords{ 0, 0, 0 };
 		int year = 2025;
 		EarthMagneticModel model{ std::make_unique<WMMModel>() };
 		MagneticVector vec = model.getField(coords, year);
