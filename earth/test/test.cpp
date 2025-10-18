@@ -5,7 +5,7 @@
 testing data getted from https://geomag.bgs.ac.uk/data_service/models_compass/wmm_calc.html
 */
 
-TEST(WMMModelTest, BasicCheck) {
+TEST(WMMModelTest, BasicCheck1) {
     EarthMagneticModel model{ std::make_unique<WMMModel>() };
     auto vec = model.getField({ 0.0, 0.0, 0.0 }, 2025);
 
@@ -13,6 +13,16 @@ TEST(WMMModelTest, BasicCheck) {
     EXPECT_NEAR(std::abs(vec.y_nT), 27521, 100.0);
     EXPECT_NEAR(std::abs(vec.z_nT), 16011, 100.0);
     EXPECT_NEAR(vec.F_nT, 31840, 100.0);
+}
+
+TEST(WMMModelTest, BasicCheck2) {
+    EarthMagneticModel model{ std::make_unique<WMMModel>() };
+    auto vec = model.getField({ 59.936, 30.303, 100.0 }, 2025);
+
+    EXPECT_NEAR(std::abs(vec.x_nT), 3062, 100.0);
+    EXPECT_NEAR(std::abs(vec.y_nT), 14782, 100.0);
+    EXPECT_NEAR(std::abs(vec.z_nT), 50877, 100.0);
+    EXPECT_NEAR(vec.F_nT, 52981, 100.0);
 }
 
 
