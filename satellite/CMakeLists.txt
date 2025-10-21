@@ -19,3 +19,5 @@ target_link_libraries(satellite PUBLIC sgp4)
 
 add_executable(satellite-main main.cpp)
 target_link_libraries(satellite-main PRIVATE satellite)
+
+add_subdirectory(test)
