@@ -1,6 +1,8 @@
 #include "handlers/Simulate.h"
 #include "SatelliteSimulation.h"
 #include "WMMModel.h"
+#include <chrono>
+#include <sstream>
 
 SimulationResults Simulator::simulate(const std::string& line1, const std::string& line2, double start_epoch_ms, double duration, double step, double h_fail_km) {
 	SimulationResults res{};
@@ -13,7 +15,13 @@ SimulationResults Simulator::simulate(const std::string& line1, const std::strin
 	std::string simulate_date = "";
 
 	auto sat_res = sat.simulate(simulate_date, start_epoch_ms, duration, step);
+	std::tm tm = {};
+	std::istringstream ss(simulate_date);
+	ss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S");
+	std::time_t time = std::mktime(&tm);
+	std::cerr << time;
 	for (const auto& v : sat_res) {
+		time += step;
 		Coords coords{ v.lat_deg, v.long_deg, v.height_km };
 		std::string year(simulate_date.begin(), simulate_date.begin() + 4);
 		MagneticVector mag_vec = earth.getField(coords, std::stoi(year));
@@ -21,12 +29,15 @@ SimulationResults Simulator::simulate(const std::string& line1, const std::strin
 		res.frames.emplace_back(v.t_rel_s, coords, mag_vec);
 		
 		Decay decay{};
+		decay.threshold_km = h_fail_km;
 		res.decay = decay;
 		if (!decay_crossed && coords.height_km < h_fail_km) {
 			decay_crossed = true;
-			decay.threshold_km = h_fail_km;
 			decay.tle_forward.crossed = true;
-			decay.tle_forward.time_utc = " ";
+			std::tm* newTm = std::localtime(&time);
+			std::ostringstream result;
+			result << std::put_time(newTm, "%Y-%m-%d %H:%M:%S");
+			decay.tle_forward.time_utc = result.str();
 			decay.tle_forward.time_from_start_s = v.t_rel_s;
 			decay.tle_forward.uncertainty_s = step;
 			res.decay = decay;
@@ -37,7 +48,7 @@ SimulationResults Simulator::simulate(const std::string& line1, const std::strin
 	res.meta.points_returned = res.meta.points_generated;
 	res.meta.skipped_frames = res.meta.points_generated - res.meta.points_returned;
 	res.meta.tle_epoche_utc = simulate_date;
-	res.meta.out_of_tle_epoch_window = false;
+	res.meta.out_of_tle_epoch_window = sat_res[sat_res.size() - 1].t_rel_s >= 2592000 ? true : false;
 
 	return res;
 }
