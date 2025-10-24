@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  earth:
+    build: ./earth
+    container_name: earth_service
+    ports:
+      - "8001:8001"
+
+  satellite:
+    build: ./satellite
+    container_name: satellite_service
+    environment:
+      - EARTH_HOST=earth
+      - EARTH_PORT=8001
+    depends_on:
+      - earth
+    ports:
+      - "8000:8000"
+
+  server:
+    build: ./server
+    container_name: server_service
+    environment:
+      - SATELLITE_HOST=satellite
+      - SATELLITE_PORT=8000
+    depends_on:
+      - satellite
+    ports:
+      - "8080:8080"
