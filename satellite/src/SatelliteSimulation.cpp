@@ -22,7 +22,7 @@ std::vector<Point> SatelliteSimulator::simulate(std::string& date, double start_
 		Point p;
 		p.lat_deg = geo.latitude * 180.0 / PI;
 		p.long_deg = geo.longitude * 180.0 / PI;
-		p.height_km = geo.altitude / 1000.0;
+		p.height_km = geo.altitude;
 		p.t_rel_s = t;
 		result.push_back(p);
 	}
